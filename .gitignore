@@ -1,0 +1,9 @@
+.build/
+dist/
+.DS_Store
+outputs/
+
+# Configuration locale et secrets
+.env
+.env.*
+!.env.example
