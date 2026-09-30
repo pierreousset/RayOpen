@@ -1,18 +1,18 @@
-## Changement
+## Change
 
-Quel problème cette PR résout-elle et quel comportement change ?
+What problem does this PR solve, and how does behavior change?
 
-## Vérification
+## Verification
 
-- [ ] Compilation macOS : `./scripts/build-app.sh`
-- [ ] Tests : `swift test`
-- [ ] Interactions concernées vérifiées manuellement (préciser lesquelles)
+- [ ] macOS build: `./scripts/build-app.sh`
+- [ ] Tests: `swift test`
+- [ ] Affected interactions checked manually (specify which)
 
-Résultats et limites des vérifications :
+Verification results and limitations:
 
-## Confidentialité et sécurité
+## Privacy and security
 
-Cette PR change-t-elle les accès réseau, permissions macOS, dépendances, stockage des textes ou le presse-papiers ? Décrire l'impact, ou indiquer « aucun ».
+Does this PR change network access, macOS permissions, dependencies, text storage, or clipboard behavior? Describe the impact, or state “none.”
 
-- [ ] Aucun secret ni texte personnel ajouté
-- [ ] Documentation mise à jour si nécessaire
+- [ ] No secrets or personal text added
+- [ ] Documentation updated where needed
