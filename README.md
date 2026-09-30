@@ -42,7 +42,7 @@ The old Option + Space preference migrates once to Command + Space. Other select
 
 The dark, title-bar-free panel measures 780 × 520 points. Search, navigate with **↑ / ↓**, then press **Return** or click a row. Selection scrolls into view and search regains focus when the panel reopens.
 
-The three most recent applications successfully opened through RayOpen appear first when the search is empty, newest first. Opening an app again moves it to the top. History stays on your Mac across restarts; removed apps are skipped. Searches continue to show matching applications and commands.
+The three most recent launcher items appear first when the search is empty, newest first. Applications successfully opened through RayOpen and the Translation command share this history. Opening an item again moves it to the top, without duplicates. History stays on your Mac across restarts; removed apps are skipped. Existing application history is preserved. Searches continue to show matching applications and commands.
 
 Search **translation** or **translate**, then press Return to open translation with the source editor focused. Translation and settings are also accessible above the results. RayOpen indexes `/Applications`, `/System/Applications`, and `~/Applications` at startup. Restart after installing a new app.
 

@@ -24,7 +24,7 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     static let defaultLMModel = "qwen2.5-1.5b-instruct"
     var defaultSelectionPending = false
     @Published var query = "" { didSet { selectedIndex = 0 } }
-    @Published var tab = 0 { didSet { if tab == 1 && oldValue != 1 { refresh() } else if tab != 1 { cancel() } } }
+    @Published var tab = 0 { didSet { if tab == 1 && oldValue != 1 { recentApplications.recordTranslation(); preferences.set(recentApplications.paths, forKey: RecentApplications.preferenceKey); selectedIndex = 0; refresh() } else if tab != 1 { cancel() } } }
     @Published var selectedIndex = 0
     @Published var focusGeneration = 0
     @Published var copyFeedback = ""
@@ -62,7 +62,7 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     var task: Task<Void, Never>?
     init(defaults d: UserDefaults = .standard, session: URLSession? = nil) {
         self.preferences = d
-        recentApplications = RecentApplications(paths: d.stringArray(forKey: RecentApplications.preferenceKey) ?? [])
+        recentApplications = RecentApplications(defaults: d)
         self.session = session ?? URLSession(configuration: .ephemeral, delegate: LocalSessionDelegate(), delegateQueue: nil)
         provider = d.string(forKey: "provider") ?? "LM Studio"
         endpoint = d.string(forKey: "endpoint") ?? "http://localhost:1234"
@@ -103,18 +103,21 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     }
     func save(_ key: String, _ value: String) { preferences.set(value, forKey: key) }
     var filtered: [InstalledApp] { apps.filter { query.isEmpty || $0.name.localizedCaseInsensitiveContains(query) } }
-    var recentApps: [InstalledApp] {
+    var recentItems: [LauncherItem] {
         let byPath = Dictionary(apps.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
-        return recentApplications.availablePaths { byPath[$0] != nil && FileManager.default.fileExists(atPath: $0) }.compactMap { byPath[$0] }
+        return recentApplications.availablePaths { byPath[$0] != nil && FileManager.default.fileExists(atPath: $0) }.compactMap {
+            if $0 == RecentApplications.translationID { return .translation }
+            return byPath[$0].map { .app($0) }
+        }
     }
     var results: [LauncherItem] {
         let search = query.trimmingCharacters(in: .whitespacesAndNewlines).folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
         // Keep French search aliases for existing users of the launcher.
         let commandMatches = search.isEmpty || ["traduction", "traduire", "translate", "translation"].contains { $0.contains(search) }
         if query.isEmpty {
-            let recent = recentApps
+            let recent = recentItems
             let recentIDs = Set(recent.map(\.id))
-            return recent.map { .app($0) } + [.translation] + filtered.filter { !recentIDs.contains($0.id) }.map { .app($0) }
+            return recent + (recentIDs.contains(RecentApplications.translationID) ? [] : [.translation]) + filtered.filter { !recentIDs.contains($0.id) }.map { .app($0) }
         }
         return (commandMatches ? [.translation] : []) + filtered.map { .app($0) }
     }
@@ -519,7 +522,7 @@ struct Content: View {
                         }.foregroundStyle(Palette.muted).frame(maxWidth: .infinity).padding(.top, 65)
                     }
                     ForEach(Array(state.results.enumerated()), id: \.element.id) { index, app in
-                        if state.query.isEmpty && !state.recentApps.isEmpty && (index == 0 || index == state.recentApps.count) {
+                        if state.query.isEmpty && !state.recentItems.isEmpty && (index == 0 || index == state.recentItems.count) {
                             Text(index == 0 ? "Recent" : "Commands & Applications")
                                 .font(.system(size: 10, weight: .medium)).foregroundStyle(Palette.muted)
                                 .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 12).padding(.top, 9).padding(.bottom, 4)
@@ -535,7 +538,7 @@ struct Content: View {
                                 }
                                 Text(app.name).font(.system(size: 13, weight: .medium)).lineLimit(1)
                                 Spacer()
-                                Text(state.query.isEmpty && index < state.recentApps.count ? "Recent" : app.kind).font(.system(size: 11)).foregroundStyle(Palette.muted)
+                                Text(state.query.isEmpty && index < state.recentItems.count ? "Recent" : app.kind).font(.system(size: 11)).foregroundStyle(Palette.muted)
                                 if state.selectedIndex == index { Text("↵").font(.system(size: 14)).foregroundStyle(Palette.muted) }
                             }.padding(.horizontal, 12).frame(height: 46)
                                 .background(state.selectedIndex == index ? Palette.selected : Color.clear, in: RoundedRectangle(cornerRadius: 7))
