@@ -1,89 +1,105 @@
 <div align="center">
-  <img src="docs/logo.svg" width="112" height="112" alt="Logo RayOpen : un rayon traverse une porte ouverte" />
+  <img src="docs/logo.svg" width="112" height="112" alt="RayOpen logo: light through an open door" />
   <h1>RayOpen</h1>
-  <p>Votre lanceur macOS. Votre traduction locale. Votre code.</p>
-  <p><a href="LICENSE">Licence MIT</a> · <a href="CONTRIBUTING.md">Contribuer</a> · <a href="SECURITY.md">Sécurité</a></p>
+  <p>Your macOS launcher. Your local translation. Your code.</p>
+  <p><a href="LICENSE">MIT license</a> · <a href="CONTRIBUTING.md">Contributing</a> · <a href="SECURITY.md">Security</a></p>
 </div>
 
-RayOpen est un lanceur macOS natif open source avec traduction par IA locale. Gratuit, sans abonnement ni API payante : recherchez une application ou ouvrez la traduction directement au clavier.
+RayOpen is an open-source native macOS launcher with local AI translation. Free to use, with no subscription or paid API required: find applications and translate directly from your keyboard.
 
-**Tout le monde peut l'utiliser, modifier le code, le redistribuer et contribuer à l'améliorer**, dans les conditions de la [licence MIT](LICENSE). Les modèles conservent leurs propres licences ; LM Studio et Ollama sont des applications séparées.
+**Everyone can use, modify, redistribute, and improve RayOpen** under the [MIT license](LICENSE). Models retain their own licenses; LM Studio and Ollama are separate applications.
 
-- **⌘ Espace** : ouvrir le panneau compact.
-- **Recherche + Entrée** : lancer une app ou ouvrir « traduction ».
-- **Traduction automatique** après une pause de saisie, texte source à gauche et résultat progressif à droite.
-- **Langues inversables**, copie du résultat et état du serveur local visible.
-- **LM Studio ou Ollama**, avec choix du modèle et préférences locales.
+- **⌘ Space** opens the compact launcher.
+- **Search + Return** launches an app or opens translation.
+- **Automatic translation** after a typing pause, with source text on the left and streamed results on the right.
+- **Swap languages**, copy completed results, and see local server status.
+- **LM Studio or Ollama**, with model selection and local preferences.
 
-SwiftUI/AppKit, sans dépendance externe. **macOS 14+ et outils Swift 6** requis pour compiler.
+Built with SwiftUI/AppKit and no external dependencies. **macOS 14+ and Swift 6 tools** are required to build. The application currently uses French interface labels; this guide includes them where useful.
 
-## Un projet ouvert, des changements relus
+## Build and run
 
-Proposez vos améliorations via un fork et une **pull request vers `main`**. La branche principale est protégée : revue du propriétaire du code, contrôle **Build macOS** et résolution des discussions avant fusion ; pushes directs, force pushes et suppression sont bloqués, y compris pour les administrateurs. La revue est redemandée après de nouveaux commits.
-
-Le propriétaire ne peut pas approuver sa propre PR. Pour ses propres changements, un autre mainteneur disposant des droits nécessaires doit être ajouté aux propriétaires du code et effectuer la revue. La fusion dans `main` n'est pas une publication en production : aucune distribution automatique n'est configurée.
-
-Consultez [le guide de contribution](CONTRIBUTING.md) et [la politique de sécurité](SECURITY.md). Ces contrôles réduisent les risques pour les utilisateurs ; ils ne garantissent pas l'absence de bugs.
-
-## Compiler et ouvrir
-
-Si Swift n'est pas installé : `xcode-select --install` (installation explicite à votre initiative).
+If Swift tools are missing, install them yourself with `xcode-select --install`.
 
 ```sh
 ./scripts/build-app.sh
 open dist/RayOpen.app
 ```
 
-Le script crée un bundle local non signé dans `dist/`. Il n'installe, ne distribue et ne modifie aucun réglage système. Pour développement : `swift run`.
+The script creates an unsigned local bundle in `dist/`. It does not install or distribute the app or change system settings. For development, use `swift run`.
 
-RayOpen apparaît dans la barre de menus sous **◈**. **Commande + Espace (⌘ Espace)** ouvre ou masque son panneau. **Échap** le masque. Réglages propose aussi **Option + Espace**, **Contrôle + Option + Espace** et la désactivation ; un conflit d'enregistrement est signalé. Un raccourci déjà traité par une autre app peut néanmoins interférer : utilisez alors le menu. Les raccourcis système ne sont jamais remplacés.
+RayOpen appears as **◈** in the menu bar. **⌘ Space** shows or hides its panel. Escape hides the launcher; from translation, it returns to the launcher and cancels the request without copying. Quit through the menu bar.
 
-### Libérer ⌘ Espace si Spotlight l’utilise
+Settings also offers Option + Space, Control + Option + Space, or disabling the shortcut. Registration errors are displayed separately from network errors. Another app may intercept a registered shortcut; use the menu bar if needed. RayOpen does not replace system shortcuts.
 
-RayOpen ne modifie pas Spotlight. Dans **Réglages Système → Clavier → Raccourcis clavier → Spotlight**, désactivez **Afficher la recherche Spotlight** ou attribuez-lui une autre combinaison. Revenez dans RayOpen → Réglages et cliquez **Réessayer le raccourci**, ou relancez l’app. Vérifiez également les raccourcis de toute autre app lanceur. Le statut indique si macOS a accepté l’enregistrement ; cela ne prouve pas que la touche a été déclenchée. Les erreurs clavier restent affichées indépendamment des erreurs réseau. [Aide Apple sur les conflits de raccourcis](https://support.apple.com/fr-cf/guide/mac-help/mchlp2864/mac).
+### If Spotlight uses ⌘ Space
 
-Au premier lancement de cette version, l’ancienne préférence **Option + Espace** migre une seule fois vers **Commande + Espace**. Les autres choix existants sont conservés ; vous pouvez ensuite sélectionner de nouveau Option + Espace.
+In **System Settings → Keyboard → Keyboard Shortcuts → Spotlight**, disable **Show Spotlight search** or assign another shortcut. In RayOpen settings, choose **Retry**, or restart. Check other launchers for conflicts too. Successful registration confirms macOS accepted the shortcut, not that a keypress reached RayOpen. [Apple shortcut conflict help](https://support.apple.com/guide/mac-help/mchlp2864/mac).
 
-Le panneau sombre sans barre de titre mesure 780 × 520 points. Dans Applications, recherchez une app, naviguez avec **↑ / ↓**, puis appuyez sur **Entrée** pour ouvrir la ligne sélectionnée, ou cliquez sur une ligne. La sélection défile automatiquement dans la liste. La recherche reprend le focus quand le panneau se rouvre. Recherchez **traduction**, **traduire** ou **translate** puis Entrée pour ouvrir la commande Traduction, avec le focus dans le texte source. Les onglets Traduire et Réglages restent accessibles au-dessus des résultats. Inventaire des dossiers `/Applications`, `/System/Applications` et `~/Applications` au démarrage. Relancez RayOpen après avoir installé une nouvelle app. Quittez depuis ◈.
+The old Option + Space preference migrates once to Command + Space. Other selections are preserved; you can select Option + Space again afterward.
 
-## LM Studio déjà installé
+## Use the launcher
 
-1. Ouvrez LM Studio, sélectionnez un modèle de conversation déjà présent et chargez-le.
-2. Dans l'onglet **Developer**, démarrez le serveur local (**Start Server**). Vérifiez l'adresse affichée, habituellement `http://localhost:1234`. Gardez l'écoute locale uniquement. Ce MVP ne gère pas les serveurs nécessitant un jeton d'authentification.
-3. Dans RayOpen → Réglages, choisissez **LM Studio**, renseignez l'URL racine **sans `/v1`**, puis **Détecter les modèles**. Choisissez un modèle de conversation chargé.
-4. Dans Traduire, saisissez ou collez du texte et choisissez la langue cible. La traduction démarre automatiquement après 500 ms de pause ; toute nouvelle saisie ou modification de langue annule immédiatement la requête précédente. Le texte source est à gauche et le résultat à droite. Le résultat arrive progressivement ; Copier place uniquement le résultat dans le presse-papiers. **Échap** revient au lanceur et annule la requête active sans copier. **⌘ Espace** ferme la traduction et copie automatiquement le résultat complet non vide ; pendant une génération, la requête est annulée sans remplacer le presse-papiers. Un résultat vide ne modifie pas le presse-papiers. Le prochain ⌘ Espace rouvre le lanceur. Un retour discret confirme la copie. Le serveur peut continuer brièvement son calcul après annulation cliente.
+The dark, title-bar-free panel measures 780 × 520 points. Search, navigate with **↑ / ↓**, then press **Return** or click a row. Selection scrolls into view and search regains focus when the panel reopens.
 
-RayOpen ne télécharge ni modèle ni runtime. Aucun modèle présent ? Installez vous-même un modèle adapté à votre machine dans LM Studio avant usage. La vitesse dépend du matériel, du modèle, du chargement et de la longueur du texte : aucune latence n'est garantie. La durée affichée est celle de votre requête, chargement inclus. La traduction automatique doit être relue.
+Search **translation** or **translate**, then press Return to open translation with the source editor focused. Translation and settings are also accessible above the results. RayOpen indexes `/Applications`, `/System/Applications`, and `~/Applications` at startup. Restart after installing a new app.
 
-## Ollama facultatif
+## Set up LM Studio
 
-Si Ollama est déjà installé, démarrez son application ou `ollama serve`. Utilisez un modèle déjà installé (`ollama list`). Dans Réglages, choisissez **Ollama**, URL `http://localhost:11434`, puis Détecter les modèles. Aucun appel à Ollama Cloud n'est prévu ; utilisez un modèle local, sans suffixe cloud.
+1. Open LM Studio and load an existing chat model.
+2. In **Developer**, choose **Start Server**. Check its address, usually `http://localhost:1234`. Keep the server listening locally. This MVP does not support authentication tokens.
+3. In RayOpen settings, select **LM Studio**, enter the root URL **without `/v1`**, and choose **Detect models**. Select a loaded chat model.
+4. Type or explicitly paste text in translation and choose a target language. Translation starts after a **500 ms typing pause**. New text or a language change immediately cancels the previous request. Results stream into the right column.
 
-## Données et limites
+The server is checked whenever translation opens. An unreachable server, missing selection, or unloaded model blocks translation with an explanation and **Retry**. Start the server or load the model, then retry; translation resumes after verification. No server polling occurs on every keystroke.
 
-Les textes restent en mémoire de RayOpen et sont envoyés au serveur sur votre Mac uniquement. Le serveur peut conserver des journaux selon ses propres réglages. L'URL accepte seulement `localhost`, `127.0.0.1` ou `::1`. Les préférences URL/modèle/langue/raccourci sont enregistrées dans UserDefaults, pas les textes. Coller est explicite ; Copier et la fermeture par ⌘ Espace en vue Traduction écrivent le résultat complet non vide dans le presse-papiers. Aucune permission Accessibilité nécessaire pour Carbon.
+LM Studio's `/api/v1/models` identifies loaded chat instances, falling back to `/api/v0/models` for older versions. `/v1/models` alone does not establish whether a model is loaded. [Official loaded-model API](https://lmstudio.ai/docs/developer/rest/list).
 
-MVP : pas d'extensions Raycast, recherche fichiers, OCR, démarrage automatique, signature ou mise à jour automatique. Lanceur pilotable avec les flèches et Entrée, ou clic. Les modèles locaux peuvent produire des erreurs de traduction : relisez les résultats avant de les utiliser.
+### Translation and clipboard
 
-## API officielles
+Two columns provide source and target language menus, explicit paste, a character count, and actual request duration. Set a custom target language in settings. The back button or Escape returns to the launcher; the gear opens settings. Results remain selectable during streaming, but **Copy** waits for completion.
 
-- [LM Studio : modèles](https://lmstudio.ai/docs/developer/openai-compat/models) : `GET /v1/models`.
-- [LM Studio : chat](https://lmstudio.ai/docs/developer/openai-compat/chat-completions) : `POST /v1/chat/completions`, stream SSE.
-- [Ollama : modèles](https://docs.ollama.com/api/tags) : `GET /api/tags`.
-- [Ollama : chat](https://docs.ollama.com/api/chat) : `POST /api/chat`, stream JSON par ligne.
+**⌘ Space** closes translation and automatically copies a complete, nonempty result. During generation it cancels the request without changing the clipboard. Empty results also leave the clipboard unchanged. A small confirmation indicates copying succeeded. The next ⌘ Space reopens the launcher. The server may continue computing briefly after client cancellation.
 
-Licence du code : [MIT](LICENSE).
+### Swap languages
 
-La vue Traduction vérifie le serveur à chaque entrée et affiche son état avec **Réessayer**. LM Studio : `/api/v1/models` identifie les instances de conversation effectivement chargées ; repli `/api/v0/models` pour les versions plus anciennes. `/v1/models` seul ne permet pas de conclure qu’un modèle est chargé. Aucun modèle chargé, sélection absente ou serveur inaccessible bloque la traduction avec une indication en français. Chargez le modèle ou démarrez le serveur puis Réessayer ; la saisie reprend automatiquement après vérification. Ollama conserve son chargement local à la requête à partir des modèles installés. Pas de polling à chaque frappe. [API officielle LM Studio : état chargé](https://lmstudio.ai/docs/developer/rest/list).
+The **Source** menu offers Automatic or an explicit language, remembered between sessions. **⇄** swaps source and target. A completed translation becomes the new source, the old result clears, and translation starts again automatically. Without a completed result, the existing source remains. With Automatic selected, choose an explicit source language first: RayOpen cannot infer a detected language the model did not return.
 
-Les nouvelles configurations privilégient `qwen2.5-1.5b-instruct`, la variante officielle Qwen Instruct. Le modèle enregistré est conservé : changer l’interface ou le prompt ne répare pas un modèle mal adapté. Une variante fine-tunée peut avoir un comportement différent du [Qwen2.5-1.5B-Instruct officiel](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct) ; choisissez un modèle adapté à la traduction. Le choix et le chargement du modèle restent explicites. RayOpen envoie une consigne de traduction stricte, température 0, et une limite de génération proportionnelle au texte (64 à 4096 tokens). Les limites et ruptures de flux sont signalées ; seuls les résultats terminés peuvent être copiés automatiquement. Cela vérifie la fin technique de la réponse, pas la qualité linguistique.
+### Models and translation quality
 
-### Espace traduction
+RayOpen downloads neither models nor runtimes. Install a model suitable for your Mac yourself. New configurations prefer `qwen2.5-1.5b-instruct`, the official Qwen Instruct variant; existing model preferences are preserved. Fine-tuned variants can differ from [official Qwen2.5-1.5B-Instruct](https://huggingface.co/Qwen/Qwen2.5-1.5B-Instruct). Interface or prompt changes do not fix an unsuitable model. Model selection and loading remain explicit.
 
-Deux colonnes lisibles, langue cible accessible dans le menu « Vers », collage explicite, compteur de caractères et durée réelle. Une langue personnalisée peut être renseignée dans Réglages → Langue cible. Le bouton retour et Échap reviennent au lanceur. Le bouton engrenage ouvre les réglages. L’état du serveur reste visible ; si aucun modèle n’est chargé, un encart indique comment reprendre. Le résultat reste sélectionnable pendant le flux, mais Copier attend sa fin complète.
+The strict translation prompt uses temperature 0 and a generation limit proportional to the source (64–4096 tokens). Limits and interrupted streams are reported. Only completed results are automatically copied: technical completion does not establish linguistic accuracy.
 
-Pour le français, un exemple de question traduite accompagne la consigne afin d’aider le petit modèle à conserver qui parle et qui est interrogé. Cette amélioration est issue d’essais locaux ; des contresens restent possibles, notamment sur les pronoms et les temps. La source est délimitée par un encodage JSON qui préserve ses guillemets et retours à la ligne.
+For French, an example question helps small models preserve who is speaking and being addressed. This adjustment comes from local trials; mistakes with pronouns, tenses, and meaning remain possible. JSON encoding preserves source quotation marks and line breaks.
 
-### Inverser les langues
+Speed depends on hardware, model, loading time, and text length. No latency is guaranteed. The displayed duration includes loading. Review translations before using them.
 
-Le menu **Source** permet de choisir **Automatique** ou une langue explicite, mémorisée entre les sessions. La double flèche **⇄** échange les langues source et cible. Si une traduction complète est disponible, elle devient le nouveau texte source ; le résultat précédent est effacé et une nouvelle traduction démarre automatiquement. Sans résultat complet, le texte saisi reste en place. Avec **Automatique**, choisissez d’abord une langue source : RayOpen ne devine pas une langue détectée que le modèle n’a pas fournie.
+## Optional: Ollama
+
+If installed, start Ollama or run `ollama serve`. Use an existing installed model (`ollama list`). In settings select **Ollama**, enter `http://localhost:11434`, and detect models. Ollama loads installed local models on request. RayOpen does not use Ollama Cloud; select a local model without a cloud suffix.
+
+## Privacy and limitations
+
+Text stays in RayOpen's memory and is sent only to the configured server on your Mac. That server may retain logs according to its settings. URLs are restricted to `localhost`, `127.0.0.1`, or `::1`. URL, model, language, and shortcut preferences are stored in UserDefaults; translation text is not.
+
+Pasting is explicit. Copy and ⌘ Space from translation can write complete, nonempty results to the macOS clipboard, which other apps may read. Carbon shortcuts do not require Accessibility permission.
+
+This MVP has no Raycast extensions, file search, OCR, automatic startup, signing, or automatic updates. Local models can mistranslate or invent content; review results.
+
+## Open contributions, reviewed changes
+
+Submit improvements through a fork and a **pull request targeting `main`**. The protected branch requires code-owner review, the **Build macOS** check, and resolved discussions. Direct pushes, force pushes, and deletion are blocked, including for administrators. New commits require renewed approval.
+
+The owner cannot approve their own PR. Another authorized maintainer must be added as a code owner to review the owner's changes. Merging into `main` does not publish a production release; no automatic distribution is configured.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md) and [SECURITY.md](SECURITY.md). Review and checks reduce risk but cannot guarantee bug-free or vulnerability-free software.
+
+## Official API references
+
+- [LM Studio models](https://lmstudio.ai/docs/developer/openai-compat/models): `GET /v1/models`.
+- [LM Studio chat](https://lmstudio.ai/docs/developer/openai-compat/chat-completions): `POST /v1/chat/completions`, streamed SSE.
+- [Ollama models](https://docs.ollama.com/api/tags): `GET /api/tags`.
+- [Ollama chat](https://docs.ollama.com/api/chat): `POST /api/chat`, newline-delimited streamed JSON.
+
+Code license: [MIT](LICENSE).

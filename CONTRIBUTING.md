@@ -1,19 +1,19 @@
-# Contribuer à RayOpen
+# Contributing to RayOpen
 
-RayOpen est ouvert à toutes et tous : corrections, traduction, accessibilité, documentation ou nouvelles idées. La licence MIT permet d'utiliser, modifier et redistribuer le code, en conservant la notice de licence. Les modèles et outils tiers gardent leurs propres licences.
+Everyone is welcome to contribute fixes, translations, accessibility improvements, documentation, or ideas. MIT permits using, modifying, and redistributing the code while retaining the license notice. Third-party models and tools retain their own licenses.
 
-## Proposer une amélioration
+## Propose an improvement
 
-1. Pour un changement important, ouvrez une issue afin de discuter du besoin. Ne publiez pas de vulnérabilité dans une issue publique : consultez [SECURITY.md](SECURITY.md).
-2. Créez un fork, puis une branche dédiée depuis `main`.
-3. Faites une modification ciblée, sans secrets, données personnelles, textes de traduction privés ni fichiers générés.
-4. Compilez avec `./scripts/build-app.sh`. Exécutez `swift test` et vérifiez manuellement les interactions concernées sur macOS.
-5. Ouvrez une pull request vers `main` avec un résumé et les contrôles réellement effectués.
+1. For a substantial change, open an issue to discuss the need. Do not publicly disclose vulnerabilities; see [SECURITY.md](SECURITY.md).
+2. Fork the repository and create a focused branch from `main`.
+3. Keep changes scoped, without secrets, personal data, private translation text, or generated files.
+4. Build with `./scripts/build-app.sh`, run `swift test`, and manually check affected interactions on macOS.
+5. Open a pull request targeting `main`, describing the change and checks actually performed.
 
-Les changements passent par une pull request et la revue du mainteneur. Les pushes directs vers `main` ne font pas partie du processus de contribution. Une fusion dans `main` ne déclenche pas, à elle seule, une publication automatique aux utilisateurs.
+Changes require pull requests and maintainer review. Direct pushes to `main` are not part of the process. Merging does not automatically distribute a release to users.
 
-## Points de vigilance
+## Things to preserve
 
-Préservez le fonctionnement local et gratuit, la restriction des serveurs à la boucle locale, l'annulation des requêtes et les préférences existantes. Signalez tout nouveau accès réseau, permission macOS, stockage de texte ou changement du presse-papiers. Documentez les limites plutôt que de promettre une traduction fiable ou instantanée.
+Keep RayOpen local and free. Preserve loopback-only servers, request cancellation, and existing preferences. Describe new network access, macOS permissions, text storage, or clipboard behavior. Document limitations instead of promising accurate or instant translation.
 
-En soumettant une contribution, vous acceptez sa distribution sous la licence MIT du projet. Merci de rester respectueux et de faciliter la revue avec de petites PR.
+Submitting a contribution means agreeing to its distribution under the project's MIT license. Remain respectful and help reviewers with small pull requests.
