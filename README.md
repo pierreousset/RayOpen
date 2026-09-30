@@ -34,7 +34,7 @@ Settings also offers Option + Space, Control + Option + Space, or disabling the 
 
 ### If Spotlight uses ⌘ Space
 
-In **System Settings → Keyboard → Keyboard Shortcuts → Spotlight**, disable **Show Spotlight search** or assign another shortcut. In RayOpen settings, choose **Retry shortcut** (`Réessayer le raccourci`), or restart. Check other launchers for conflicts too. Successful registration confirms macOS accepted the shortcut, not that a keypress reached RayOpen. [Apple shortcut conflict help](https://support.apple.com/fr-cf/guide/mac-help/mchlp2864/mac).
+In **System Settings → Keyboard → Keyboard Shortcuts → Spotlight**, disable **Show Spotlight search** or assign another shortcut. In RayOpen settings, choose **Retry**, or restart. Check other launchers for conflicts too. Successful registration confirms macOS accepted the shortcut, not that a keypress reached RayOpen. [Apple shortcut conflict help](https://support.apple.com/guide/mac-help/mchlp2864/mac).
 
 The old Option + Space preference migrates once to Command + Space. Other selections are preserved; you can select Option + Space again afterward.
 
@@ -42,16 +42,16 @@ The old Option + Space preference migrates once to Command + Space. Other select
 
 The dark, title-bar-free panel measures 780 × 520 points. Search, navigate with **↑ / ↓**, then press **Return** or click a row. Selection scrolls into view and search regains focus when the panel reopens.
 
-Search **traduction**, **traduire**, or **translate**, then press Return to open translation with the source editor focused. Translation and settings are also accessible above the results. RayOpen indexes `/Applications`, `/System/Applications`, and `~/Applications` at startup. Restart after installing a new app.
+Search **translation** or **translate**, then press Return to open translation with the source editor focused. Translation and settings are also accessible above the results. RayOpen indexes `/Applications`, `/System/Applications`, and `~/Applications` at startup. Restart after installing a new app.
 
 ## Set up LM Studio
 
 1. Open LM Studio and load an existing chat model.
 2. In **Developer**, choose **Start Server**. Check its address, usually `http://localhost:1234`. Keep the server listening locally. This MVP does not support authentication tokens.
-3. In RayOpen settings (`Réglages`), select **LM Studio**, enter the root URL **without `/v1`**, and choose **Detect models** (`Détecter les modèles`). Select a loaded chat model.
+3. In RayOpen settings, select **LM Studio**, enter the root URL **without `/v1`**, and choose **Detect models**. Select a loaded chat model.
 4. Type or explicitly paste text in translation and choose a target language. Translation starts after a **500 ms typing pause**. New text or a language change immediately cancels the previous request. Results stream into the right column.
 
-The server is checked whenever translation opens. An unreachable server, missing selection, or unloaded model blocks translation with an explanation and **Retry** (`Réessayer`). Start the server or load the model, then retry; translation resumes after verification. No server polling occurs on every keystroke.
+The server is checked whenever translation opens. An unreachable server, missing selection, or unloaded model blocks translation with an explanation and **Retry**. Start the server or load the model, then retry; translation resumes after verification. No server polling occurs on every keystroke.
 
 LM Studio's `/api/v1/models` identifies loaded chat instances, falling back to `/api/v0/models` for older versions. `/v1/models` alone does not establish whether a model is loaded. [Official loaded-model API](https://lmstudio.ai/docs/developer/rest/list).
 

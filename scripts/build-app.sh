@@ -23,4 +23,4 @@ cat > "$APP/Contents/Info.plist" <<'PLIST'
 <key>NSAppTransportSecurity</key><dict><key>NSAllowsLocalNetworking</key><true/></dict>
 </dict></plist>
 PLIST
-printf 'Application créée : %s\nLancer : open "%s"\n' "$APP" "$APP"
+printf 'Application built : %s\nLaunch: open "%s"\n' "$APP" "$APP"
