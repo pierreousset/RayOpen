@@ -1,6 +1,29 @@
-# RayOpen
+<div align="center">
+  <img src="docs/logo.svg" width="112" height="112" alt="Logo RayOpen : un rayon traverse une porte ouverte" />
+  <h1>RayOpen</h1>
+  <p>Votre lanceur macOS. Votre traduction locale. Votre code.</p>
+  <p><a href="LICENSE">Licence MIT</a> · <a href="CONTRIBUTING.md">Contribuer</a> · <a href="SECURITY.md">Sécurité</a></p>
+</div>
 
-Premier MVP open source de lanceur macOS natif avec traduction par IA locale. Gratuit, sans abonnement ni API payante. SwiftUI/AppKit, sans dépendance externe. macOS 14+ et outils Swift 6 requis. Le modèle conserve sa propre licence ; LM Studio et Ollama sont des applications séparées.
+RayOpen est un lanceur macOS natif open source avec traduction par IA locale. Gratuit, sans abonnement ni API payante : recherchez une application ou ouvrez la traduction directement au clavier.
+
+**Tout le monde peut l'utiliser, modifier le code, le redistribuer et contribuer à l'améliorer**, dans les conditions de la [licence MIT](LICENSE). Les modèles conservent leurs propres licences ; LM Studio et Ollama sont des applications séparées.
+
+- **⌘ Espace** : ouvrir le panneau compact.
+- **Recherche + Entrée** : lancer une app ou ouvrir « traduction ».
+- **Traduction automatique** après une pause de saisie, texte source à gauche et résultat progressif à droite.
+- **Langues inversables**, copie du résultat et état du serveur local visible.
+- **LM Studio ou Ollama**, avec choix du modèle et préférences locales.
+
+SwiftUI/AppKit, sans dépendance externe. **macOS 14+ et outils Swift 6** requis pour compiler.
+
+## Un projet ouvert, des changements relus
+
+Proposez vos améliorations via un fork et une **pull request vers `main`**. La branche principale est protégée : revue du propriétaire du code, contrôle **Build macOS** et résolution des discussions avant fusion ; pushes directs, force pushes et suppression sont bloqués, y compris pour les administrateurs. La revue est redemandée après de nouveaux commits.
+
+Le propriétaire ne peut pas approuver sa propre PR. Pour ses propres changements, un autre mainteneur disposant des droits nécessaires doit être ajouté aux propriétaires du code et effectuer la revue. La fusion dans `main` n'est pas une publication en production : aucune distribution automatique n'est configurée.
+
+Consultez [le guide de contribution](CONTRIBUTING.md) et [la politique de sécurité](SECURITY.md). Ces contrôles réduisent les risques pour les utilisateurs ; ils ne garantissent pas l'absence de bugs.
 
 ## Compiler et ouvrir
 
@@ -49,7 +72,7 @@ MVP : pas d'extensions Raycast, recherche fichiers, OCR, démarrage automatique,
 - [Ollama : modèles](https://docs.ollama.com/api/tags) : `GET /api/tags`.
 - [Ollama : chat](https://docs.ollama.com/api/chat) : `POST /api/chat`, stream JSON par ligne.
 
-Licence du code : MIT, voir LICENSE.
+Licence du code : [MIT](LICENSE).
 
 La vue Traduction vérifie le serveur à chaque entrée et affiche son état avec **Réessayer**. LM Studio : `/api/v1/models` identifie les instances de conversation effectivement chargées ; repli `/api/v0/models` pour les versions plus anciennes. `/v1/models` seul ne permet pas de conclure qu’un modèle est chargé. Aucun modèle chargé, sélection absente ou serveur inaccessible bloque la traduction avec une indication en français. Chargez le modèle ou démarrez le serveur puis Réessayer ; la saisie reprend automatiquement après vérification. Ollama conserve son chargement local à la requête à partir des modèles installés. Pas de polling à chaque frappe. [API officielle LM Studio : état chargé](https://lmstudio.ai/docs/developer/rest/list).
 

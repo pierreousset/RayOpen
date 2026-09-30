@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128" role="img" aria-labelledby="title desc">
+  <title id="title">RayOpen</title>
+  <desc id="desc">Un rayon bleu traverse une porte ouverte sur un carré sombre arrondi.</desc>
+  <defs><linearGradient id="ray" x1="0" y1="1" x2="1" y2="0"><stop stop-color="#75baff"/><stop offset="1" stop-color="#9af0df"/></linearGradient></defs>
+  <rect width="128" height="128" rx="30" fill="#171a22"/>
+  <path d="M75 29H45a12 12 0 0 0-12 12v46a12 12 0 0 0 12 12h30" fill="none" stroke="#69768c" stroke-width="8" stroke-linecap="round"/>
+  <path d="m48 83 40-40M66 43h22v22" fill="none" stroke="url(#ray)" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
