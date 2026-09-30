@@ -23,3 +23,8 @@ jobs:
         run: ./scripts/build-app.sh
       - name: Validate bundle
         run: plutil -lint dist/RayOpen.app/Contents/Info.plist
+      - name: Test recent applications
+        run: |
+          mkdir -p .build/test-module-cache
+          swiftc -module-cache-path .build/test-module-cache Sources/RayOpen/RecentApplications.swift tests/recent-applications.swift -o .build/recent-applications-tests
+          .build/recent-applications-tests

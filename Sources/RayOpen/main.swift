@@ -29,6 +29,8 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     @Published var focusGeneration = 0
     @Published var copyFeedback = ""
     @Published var apps: [InstalledApp] = []
+    @Published var recentApplications = RecentApplications(paths: [])
+    @Published var launchError = ""
     @Published var source = "" { didSet { if source != oldValue { inputChanged() } } }
     @Published var output = ""
     @Published var resultComplete = false
@@ -60,6 +62,7 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     var task: Task<Void, Never>?
     init(defaults d: UserDefaults = .standard, session: URLSession? = nil) {
         self.preferences = d
+        recentApplications = RecentApplications(paths: d.stringArray(forKey: RecentApplications.preferenceKey) ?? [])
         self.session = session ?? URLSession(configuration: .ephemeral, delegate: LocalSessionDelegate(), delegateQueue: nil)
         provider = d.string(forKey: "provider") ?? "LM Studio"
         endpoint = d.string(forKey: "endpoint") ?? "http://localhost:1234"
@@ -100,10 +103,19 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
     }
     func save(_ key: String, _ value: String) { preferences.set(value, forKey: key) }
     var filtered: [InstalledApp] { apps.filter { query.isEmpty || $0.name.localizedCaseInsensitiveContains(query) } }
+    var recentApps: [InstalledApp] {
+        let byPath = Dictionary(apps.map { ($0.id, $0) }, uniquingKeysWith: { first, _ in first })
+        return recentApplications.availablePaths { byPath[$0] != nil && FileManager.default.fileExists(atPath: $0) }.compactMap { byPath[$0] }
+    }
     var results: [LauncherItem] {
         let search = query.trimmingCharacters(in: .whitespacesAndNewlines).folding(options: [.diacriticInsensitive, .caseInsensitive], locale: .current)
         // Keep French search aliases for existing users of the launcher.
         let commandMatches = search.isEmpty || ["traduction", "traduire", "translate", "translation"].contains { $0.contains(search) }
+        if query.isEmpty {
+            let recent = recentApps
+            let recentIDs = Set(recent.map(\.id))
+            return recent.map { .app($0) } + [.translation] + filtered.filter { !recentIDs.contains($0.id) }.map { .app($0) }
+        }
         return (commandMatches ? [.translation] : []) + filtered.map { .app($0) }
     }
     func activate(_ item: LauncherItem) {
@@ -118,7 +130,21 @@ final class LocalSessionDelegate: NSObject, URLSessionTaskDelegate {
         NSPasteboard.general.clearContents(); NSPasteboard.general.setString(output, forType: .string)
         copyFeedback = busy ? "Available text copied" : "Translation copied"
     }
-    func launch(_ app: InstalledApp) { NSWorkspace.shared.openApplication(at: app.url, configuration: .init()); NSApp.hide(nil) }
+    func launch(_ app: InstalledApp) {
+        launchError = ""
+        NSWorkspace.shared.openApplication(at: app.url, configuration: .init()) { runningApp, error in
+            Task { @MainActor in
+                guard runningApp != nil, error == nil else {
+                    self.launchError = "Could not open \(app.name): \(error?.localizedDescription ?? "Application unavailable.")"
+                    return
+                }
+                self.recentApplications.record(app.url)
+                self.preferences.set(self.recentApplications.paths, forKey: RecentApplications.preferenceKey)
+                self.selectedIndex = 0
+                NSApp.hide(nil)
+            }
+        }
+    }
     func url(_ path: String) throws -> URL {
         guard let base = URL(string: endpoint), ["http", "https"].contains(base.scheme?.lowercased() ?? ""), let host = base.host, ["localhost", "127.0.0.1", "::1"].contains(host.lowercased()), base.user == nil, base.password == nil, base.query == nil, base.fragment == nil, base.path.isEmpty || base.path == "/" else {
             throw NSError(domain: "RayOpen", code: 1, userInfo: [NSLocalizedDescriptionKey: "Local address required : http://localhost:1234 or http://127.0.0.1:11434, with no path."])
@@ -482,6 +508,9 @@ struct Content: View {
         ScrollViewReader { proxy in
             ScrollView {
                 LazyVStack(spacing: 3) {
+                    if !state.launchError.isEmpty {
+                        Text(state.launchError).font(.system(size: 11)).foregroundStyle(.red).frame(maxWidth: .infinity, alignment: .leading).padding(10)
+                    }
                     if state.results.isEmpty {
                         VStack(spacing: 8) {
                             Image(systemName: "app.dashed").font(.system(size: 25))
@@ -490,6 +519,11 @@ struct Content: View {
                         }.foregroundStyle(Palette.muted).frame(maxWidth: .infinity).padding(.top, 65)
                     }
                     ForEach(Array(state.results.enumerated()), id: \.element.id) { index, app in
+                        if state.query.isEmpty && !state.recentApps.isEmpty && (index == 0 || index == state.recentApps.count) {
+                            Text(index == 0 ? "Recent" : "Commands & Applications")
+                                .font(.system(size: 10, weight: .medium)).foregroundStyle(Palette.muted)
+                                .frame(maxWidth: .infinity, alignment: .leading).padding(.horizontal, 12).padding(.top, 9).padding(.bottom, 4)
+                        }
                         Button { state.selectedIndex = index; state.activate(app) } label: {
                             HStack(spacing: 12) {
                                 Group {
@@ -501,7 +535,7 @@ struct Content: View {
                                 }
                                 Text(app.name).font(.system(size: 13, weight: .medium)).lineLimit(1)
                                 Spacer()
-                                Text(app.kind).font(.system(size: 11)).foregroundStyle(Palette.muted)
+                                Text(state.query.isEmpty && index < state.recentApps.count ? "Recent" : app.kind).font(.system(size: 11)).foregroundStyle(Palette.muted)
                                 if state.selectedIndex == index { Text("↵").font(.system(size: 14)).foregroundStyle(Palette.muted) }
                             }.padding(.horizontal, 12).frame(height: 46)
                                 .background(state.selectedIndex == index ? Palette.selected : Color.clear, in: RoundedRectangle(cornerRadius: 7))
