@@ -701,7 +701,7 @@ struct Content: View {
 
 final class LauncherPanel: NSPanel {
     override var canBecomeKey: Bool { true }
-    override var canBecomeMain: Bool { true }
+    override var canBecomeMain: Bool { false }
 }
 
 @MainActor final class Delegate: NSObject, NSApplicationDelegate {
@@ -713,7 +713,11 @@ final class LauncherPanel: NSPanel {
     var escapeMonitor: Any?
     func applicationDidFinishLaunching(_ notification: Notification) {
         NSApp.setActivationPolicy(.accessory)
-        panel = LauncherPanel(contentRect: NSRect(x: 0, y: 0, width: 780, height: 520), styleMask: [.borderless], backing: .buffered, defer: false)
+        // A nonactivating panel can take keyboard focus in another app's full-screen Space.
+        panel = LauncherPanel(contentRect: NSRect(x: 0, y: 0, width: 780, height: 520), styleMask: [.borderless, .nonactivatingPanel], backing: .buffered, defer: false)
+        panel.isFloatingPanel = true
+        panel.becomesKeyOnlyIfNeeded = false
+        panel.hidesOnDeactivate = false
         panel.title = "RayOpen"; panel.isOpaque = false; panel.backgroundColor = .clear; panel.hasShadow = true; panel.isMovableByWindowBackground = true; panel.isReleasedWhenClosed = false; panel.level = .floating; panel.collectionBehavior = [.canJoinAllSpaces, .fullScreenAuxiliary]; panel.contentView = NSHostingView(rootView: Content(state: state)); panel.center()
         status = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength); status.button?.title = "◈"
         let menu = NSMenu(); menu.addItem(withTitle: "Open RayOpen", action: #selector(toggle), keyEquivalent: "").target = self; menu.addItem(.separator()); menu.addItem(withTitle: "Quit", action: #selector(quit), keyEquivalent: "q").target = self; status.menu = menu
@@ -768,7 +772,10 @@ final class LauncherPanel: NSPanel {
             panel.orderOut(nil)
         } else {
             state.returnToLauncher()
-            NSApp.activate(ignoringOtherApps: true); panel.makeKeyAndOrderFront(nil); state.focusGeneration += 1
+            // Activating the app here can switch away from the current full-screen Space.
+            panel.orderFrontRegardless()
+            panel.makeKey()
+            state.focusGeneration += 1
         }
     }
     @objc func quit() { NSApp.terminate(nil) }
